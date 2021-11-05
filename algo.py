@@ -1,10 +1,48 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+import backtrader as bt
 import yfinance as yf
 from datetime import datetime
-import backtrader as bt
 import backtrader.feeds as btfeeds
 import backtrader.indicators as btind
+
+
+class SuperTrendStrategy(bt.SignalStrategy):
+
+
+    def __init__(self):
+        self.order_id = None
+        self.status = 0
+        self.portfolio_value = 100000
+        self.exchange_amt = .2
+        st = SuperTrend(period=7, multiplier=3)
+
+    def notify_order(self, order):
+        if order.status in [bt.Order.Submitted, bt.Order.Accepted]:
+            return
+        
+        self.order_id = None
+
+    def next(self):
+
+        if self.order_id:
+            return
+
+        if (True) and (self.status != 1):
+            self.sell(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
+            self.status = 1
+        
+        if (True) and (self.status != 2):
+            self.buy(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
+            self.status = 2
+        
+
+    def stop(self):
+        print(f'Initial portfolio value: {self.broker.startingcash}')
+        print(f'Final   portfolio value: {self.broker.getvalue()}')
+        print(
+            f'Return             rate: {self.broker.getvalue()/self.broker.startingcash}'
+        )
 
 class SuperTrendBand(bt.Indicator):
     """
@@ -68,11 +106,11 @@ def main():
     cerebro = bt.Cerebro()
 
     ma = bt.feeds.PandasData(
-        dataname=yf.download('MA', datetime(2011, 1, 1), datetime(2021, 6, 10)))
+        dataname=yf.download('MA', datetime(2021, 1, 1), datetime(2021, 6, 10)))
 
     cerebro.adddata(ma)
 
-    cerebro.addstrategy(SuperTrend)
+    cerebro.addstrategy(SuperTrendStrategy)
 
     cerebro.run()
     cerebro.plot()
