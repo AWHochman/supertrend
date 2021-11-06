@@ -15,7 +15,7 @@ class SuperTrendStrategy(bt.SignalStrategy):
         self.status = 0
         self.portfolio_value = 100000
         self.exchange_amt = .2
-        st = SuperTrend(period=7, multiplier=3)
+        self.st = SuperTrend(period=7, multiplier=3)
 
     def notify_order(self, order):
         if order.status in [bt.Order.Submitted, bt.Order.Accepted]:
@@ -27,12 +27,11 @@ class SuperTrendStrategy(bt.SignalStrategy):
 
         if self.order_id:
             return
-
-        if (True) and (self.status != 1):
+        if (self.data.close[0] > self.st) and (self.status != 1):
             self.sell(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
             self.status = 1
         
-        if (True) and (self.status != 2):
+        if (self.data.close[0] < self.st) and (self.status != 2):
             self.buy(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
             self.status = 2
         
@@ -106,7 +105,7 @@ def main():
     cerebro = bt.Cerebro()
 
     ma = bt.feeds.PandasData(
-        dataname=yf.download('MA', datetime(2021, 1, 1), datetime(2021, 6, 10)))
+        dataname=yf.download('AAPL', datetime(2015, 1, 1), datetime(2016, 1, 1)))
 
     cerebro.adddata(ma)
 
