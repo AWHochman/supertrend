@@ -16,7 +16,8 @@ class SuperTrendStrategy(bt.SignalStrategy):
         self.portfolio_value = 100000
         self.exchange_amt = .3
         self.st = SuperTrend(period=7, multiplier=3)
-        self.ema = EMA(self.data, period=7)
+        self.ema3 = EMA(self.data, period=3)
+        self.ema20 = EMA(self.data, period=20)
 
     def notify_order(self, order):
         if order.status in [bt.Order.Submitted, bt.Order.Accepted]:
@@ -30,11 +31,11 @@ class SuperTrendStrategy(bt.SignalStrategy):
             return
         numShares = self.broker.getvalue()/self.data.close
         numToExchange = int(numShares*self.exchange_amt)
-        if (self.data.close > self.st) and (self.status != 1):
+        if (self.data.close > self.st) and (self.ema3 < self.ema20) and (self.status != 1):
             self.sell(data=self.data, size=numToExchange)
             self.status = 1
         
-        if (self.data.close < self.st) and (self.status != 2):
+        if (self.data.close < self.st) and (self.ema3 > self.ema20) and (self.status != 2):
             self.buy(data=self.data, size=numToExchange)
             self.status = 2
         
@@ -110,16 +111,16 @@ def main():
     cerebro = bt.Cerebro()
 
     # ma = bt.feeds.PandasData(
-    #     dataname=yf.download('AAPL', datetime(2019, 1, 1), datetime(2020, 1, 1)))
+    #     dataname=yf.download('AAPL', datetime(2010, 1, 1), datetime(2020, 1, 1)))
     ma = bt.feeds.PandasData(
-        dataname=yf.download('MSFT', datetime(2019, 1, 1), datetime(2020, 1, 1)))
+        dataname=yf.download('MSFT', datetime(2011, 1, 1), datetime(2020, 1, 1)))
 
     cerebro.adddata(ma)
 
     cerebro.addstrategy(SuperTrendStrategy)
 
     cerebro.run()
-    # cerebro.plot()
+    cerebro.plot()
 
 
 if __name__ == '__main__':
