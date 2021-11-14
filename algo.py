@@ -25,7 +25,7 @@ class SuperTrendStrategy(bt.SignalStrategy):
 
     def next(self):
 
-        if self.order_id:
+        if self.order_id or self.broker.getvalue() <= 0:
             return
         if (self.data.close[0] > self.st) and (self.status != 1):
             self.sell(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
@@ -38,9 +38,9 @@ class SuperTrendStrategy(bt.SignalStrategy):
 
     def stop(self):
         print(f'Initial portfolio value: {self.broker.startingcash}')
-        print(f'Final   portfolio value: {self.broker.getvalue()}')
+        print(f'Final   portfolio value: {self.broker.getvalue() + self.broker.getcash()}')
         print(
-            f'Return             rate: {self.broker.getvalue()/self.broker.startingcash}'
+            f'Return             rate: {(self.broker.getvalue() + self.broker.getcash())/self.broker.startingcash}'
         )
 
 class SuperTrendBand(bt.Indicator):
@@ -105,14 +105,14 @@ def main():
     cerebro = bt.Cerebro()
 
     ma = bt.feeds.PandasData(
-        dataname=yf.download('AAPL', datetime(2015, 1, 1), datetime(2016, 1, 1)))
+        dataname=yf.download('AAPL', datetime(2019, 1, 1), datetime(2020, 1, 1)))
 
     cerebro.adddata(ma)
 
     cerebro.addstrategy(SuperTrendStrategy)
 
     cerebro.run()
-    cerebro.plot()
+    # cerebro.plot()
 
 
 if __name__ == '__main__':
