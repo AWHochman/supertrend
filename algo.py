@@ -14,7 +14,7 @@ class SuperTrendStrategy(bt.SignalStrategy):
         self.order_id = None
         self.status = 0
         self.portfolio_value = 100000
-        self.exchange_amt = .3
+        self.exchange_amt = .2
         self.st = SuperTrend(period=7, multiplier=3)
         self.ema3 = EMA(self.data, period=3)
         self.ema20 = EMA(self.data, period=20)
@@ -43,10 +43,10 @@ class SuperTrendStrategy(bt.SignalStrategy):
     def stop(self):
         self.sell(data=self.data, size=(self.broker.getvalue()))
         print(f'Initial portfolio value: {self.broker.startingcash}')
-        print(f'Final   portfolio value: {self.broker.getvalue() + self.broker.getcash()}')
+        print(f'Final   portfolio value: {self.broker.getvalue()}')
         # print(f'Final    cash amout    : {self.broker.getcash()}')
         print(
-            f'Return             rate: {(self.broker.getvalue() + self.broker.getcash())/self.broker.startingcash}'
+            f'Return             rate: {(self.broker.getvalue())/self.broker.startingcash}'
         )
 
 class SuperTrendBand(bt.Indicator):
@@ -110,10 +110,10 @@ class SuperTrend(bt.Indicator):
 def main():
     cerebro = bt.Cerebro()
 
-    # ma = bt.feeds.PandasData(
-    #     dataname=yf.download('AAPL', datetime(2010, 1, 1), datetime(2020, 1, 1)))
     ma = bt.feeds.PandasData(
-        dataname=yf.download('MSFT', datetime(2011, 1, 1), datetime(2020, 1, 1)))
+        dataname=yf.download('AAPL', datetime(2011, 1, 1), datetime(2021, 1, 1)))
+    # ma = bt.feeds.PandasData(
+    #     dataname=yf.download('MSFT', datetime(2011, 1, 1), datetime(2020, 1, 1)))
 
     cerebro.adddata(ma)
 
