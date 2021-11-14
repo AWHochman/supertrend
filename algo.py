@@ -115,14 +115,14 @@ def main():
     # ma = bt.feeds.PandasData(
     #     dataname=yf.download('TSLA', datetime(2018, 1, 1), datetime(2021, 1, 1)))
     ma = bt.feeds.PandasData(
-        dataname=yf.download('MSFT', datetime(2011, 1, 1), datetime(2020, 1, 1)))
+        dataname=yf.download('AAPL', datetime(2011, 1, 1), datetime(2020, 1, 1)))
 
     cerebro.adddata(ma)
 
     cerebro.addstrategy(SuperTrendStrategy)
 
     cerebro.run()
-    # cerebro.plot()
+    cerebro.plot()
 
 
 if __name__ == '__main__':
