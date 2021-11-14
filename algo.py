@@ -25,7 +25,7 @@ class SuperTrendStrategy(bt.SignalStrategy):
 
     def next(self):
 
-        if self.order_id or self.broker.getvalue() <= 0:
+        if self.order_id:
             return
         if (self.data.close[0] > self.st) and (self.status != 1):
             self.sell(data=self.data0, size=(self.broker.getvalue() * self.exchange_amt))
